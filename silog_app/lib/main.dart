@@ -50,15 +50,9 @@ class BerandaPage extends StatelessWidget {
                 padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    Text(
-                      'Nama  : Muhammad Baihaqi Siregar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Text('Nama  : Hasan Zubeir Pohan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     SizedBox(height: 6),
-                    Text('NIM   : 714240024', style: TextStyle(fontSize: 16)),
+                    Text('NIM   : 714240045', style: TextStyle(fontSize: 16)),
                     SizedBox(height: 6),
                     Text('Kelas : 3C', style: TextStyle(fontSize: 16)),
                   ],
