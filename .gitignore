@@ -1,0 +1,7 @@
+# Jurnal, PDF, dan Gambar Dokumentasi
+*.docx
+*.pdf
+gambar_modul06/
+*.py
+*.tmp
+~$*
