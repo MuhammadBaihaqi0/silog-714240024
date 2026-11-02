@@ -1,4 +1,3 @@
-
 import 'barang.dart';
 import 'gudang.dart';
 import 'pelanggan.dart';
@@ -8,10 +7,9 @@ class Pengiriman {
   final Gudang asal;
   final String kotaTujuan;
   final Barang barang;
-  final Pelanggan pelanggan;
+  final Pelanggan? pelanggan;
   final int jumlah;
   final DateTime tanggalKirim;
-  
 
   String _status;
 
@@ -22,9 +20,9 @@ class Pengiriman {
     required this.barang,
     required this.jumlah,
     required this.tanggalKirim,
-    required this.pelanggan,
-    this._status = 'Draft',
-  });
+    this.pelanggan,
+    String status = 'Draft',
+  }) : _status = status; // ignore: prefer_initializing_formals
 
   /// Konstruktor bernama untuk pengiriman yang baru didaftarkan hari ini.
   Pengiriman.baru({
@@ -32,10 +30,10 @@ class Pengiriman {
     required this.asal,
     required this.kotaTujuan,
     required this.barang,
-    required this.pelanggan,
+    this.pelanggan,
     required this.jumlah,
-  })  : tanggalKirim = DateTime.now(),
-        _status = 'Menunggu Pickup';
+  }) : tanggalKirim = DateTime.now(),
+       _status = 'Menunggu Pickup';
 
   String get status => _status;
 
@@ -64,6 +62,7 @@ class Pengiriman {
   }
 
   @override
-String toString() =>
-    '$resi | ${barang.nama} x$jumlah | ${asal.kota} -> $kotaTujuan | $_status | ${pelanggan.nama}';
+  String toString() =>
+      '$resi | ${barang.nama} x$jumlah | ${asal.kota} -> $kotaTujuan | $_status'
+      '${pelanggan != null ? ' | ${pelanggan!.nama}' : ''}';
 }

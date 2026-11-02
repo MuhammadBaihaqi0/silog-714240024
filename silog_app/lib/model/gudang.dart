@@ -1,4 +1,3 @@
-
 import 'barang.dart';
 
 class Gudang {
@@ -24,15 +23,11 @@ class Gudang {
 
   void terimaBarang(Barang barang, int jumlah) {
     if (jumlah <= 0) {
-      throw ArgumentError(
-        'Jumlah penerimaan harus lebih besar dari nol',
-      );
+      throw ArgumentError('Jumlah penerimaan harus lebih besar dari nol');
     }
 
     if (totalStok + jumlah > kapasitas) {
-      throw StateError(
-        'Kapasitas gudang $nama tidak mencukupi',
-      );
+      throw StateError('Kapasitas gudang $nama tidak mencukupi');
     }
 
     _stok[barang.kode] = (_stok[barang.kode] ?? 0) + jumlah;
@@ -42,9 +37,7 @@ class Gudang {
     final tersedia = _stok[barang.kode] ?? 0;
 
     if (jumlah <= 0) {
-      throw ArgumentError(
-        'Jumlah pengeluaran harus lebih besar dari nol',
-      );
+      throw ArgumentError('Jumlah pengeluaran harus lebih besar dari nol');
     }
 
     if (jumlah > tersedia) {
@@ -58,6 +51,5 @@ class Gudang {
   }
 
   @override
-  String toString() =>
-      '$kode - $nama ($kota), stok $totalStok/$kapasitas';
+  String toString() => '$kode - $nama ($kota), stok $totalStok/$kapasitas';
 }
