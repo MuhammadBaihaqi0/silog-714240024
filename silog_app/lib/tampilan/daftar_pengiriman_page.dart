@@ -1,104 +1,111 @@
 import 'package:flutter/material.dart';
-
 import '../data/data_contoh.dart';
 import '../model/pengiriman.dart';
 import '../widget/kartu_pengiriman.dart';
-import '../widget/ringkasan_pengiriman.dart';
 import 'detail_pengiriman_page.dart';
+import 'form_pengiriman_page.dart';
 
-class DaftarPengirimanPage extends StatelessWidget {
+class DaftarPengirimanPage extends StatefulWidget {
   const DaftarPengirimanPage({super.key});
 
-  Widget _buildList(BuildContext context, List<Pengiriman> items) {
-    if (items.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.inbox_outlined, size: 48, color: Colors.grey),
-            SizedBox(height: 8),
-            Text('Tidak ada pengiriman', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
+  @override
+  State<DaftarPengirimanPage> createState() => _DaftarPengirimanPageState();
+}
+
+class _DaftarPengirimanPageState extends State<DaftarPengirimanPage> {
+  late List<Pengiriman> _daftar;
+  String _filterStatus = 'Semua';
+
+  @override
+  void initState() {
+    super.initState();
+    _daftar = List<Pengiriman>.from(dataPengiriman);
+  }
+
+  List<Pengiriman> get _hasilSaring => _filterStatus == 'Semua'
+      ? _daftar
+      : _daftar.where((p) => p.status == _filterStatus).toList();
+
+  Future<void> _bukaFormulir() async {
+    final hasil = await Navigator.push<Pengiriman>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FormPengirimanPage(daftarResi: _daftar.map((p) => p.resi).toList()),
+      ),
+    );
+
+    if (hasil != null) {
+      setState(() => _daftar.insert(0, hasil));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pengiriman ${hasil.resi} berhasil ditambahkan')),
       );
     }
+  }
 
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return KartuPengiriman(
-          pengiriman: item,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => DetailPengirimanPage(pengiriman: item),
-              ),
-            );
-          },
-        );
-      },
+  void _hapusPengiriman(Pengiriman pengiriman) {
+    setState(() => _daftar.remove(pengiriman));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Pengiriman ${pengiriman.resi} berhasil dihapus')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final totalNilai = dataPengiriman.fold<double>(
-      0,
-      (sum, item) => sum + item.nilaiBarang,
-    );
+    const opsi = ['Semua', 'Menunggu Pickup', 'Dalam Perjalanan', 'Diterima'];
 
-    final dalamPerjalanan = dataPengiriman
-        .where((p) => p.status == 'Dalam Perjalanan')
-        .toList();
-
-    final diterima = dataPengiriman
-        .where((p) => p.status == 'Diterima')
-        .toList();
-
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Daftar Pengiriman'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {},
-              tooltip: 'Cari resi',
+    return Scaffold(
+      appBar: AppBar(title: const Text('Daftar Pengiriman')),
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: opsi.map((o) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(o),
+                    selected: _filterStatus == o,
+                    onSelected: (_) => setState(() => _filterStatus = o),
+                  ),
+                );
+              }).toList(),
             ),
-          ],
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Semua'),
-              Tab(text: 'Dalam Perjalanan'),
-              Tab(text: 'Diterima'),
-            ],
           ),
-        ),
-        body: Column(
-          children: [
-            RingkasanPengiriman(
-              totalPengiriman: dataPengiriman.length,
-              totalNilai: totalNilai,
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildList(context, dataPengiriman),
-                  _buildList(context, dalamPerjalanan),
-                  _buildList(context, diterima),
-                ],
-              ),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
-          icon: const Icon(Icons.add),
-          label: const Text('Pengiriman Baru'),
-        ),
+          Text('Menampilkan ${_hasilSaring.length} dari ${_daftar.length} data'),
+          Expanded(
+            child: _hasilSaring.isEmpty
+                ? const Center(child: Text('Tidak ada data pengiriman'))
+                : ListView.builder(
+                    itemCount: _hasilSaring.length,
+                    itemBuilder: (context, i) {
+                      final item = _hasilSaring[i];
+                      return KartuPengiriman(
+                        pengiriman: item,
+                        onTap: () async {
+                          final dihapus = await Navigator.push<bool>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  DetailPengirimanPage(pengiriman: item),
+                            ),
+                          );
+                          if (dihapus == true) {
+                            _hapusPengiriman(item);
+                          }
+                        },
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _bukaFormulir,
+        icon: const Icon(Icons.add),
+        label: const Text('Pengiriman Baru'),
       ),
     );
   }

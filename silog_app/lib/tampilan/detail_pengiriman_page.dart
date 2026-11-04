@@ -24,6 +24,36 @@ class DetailPengirimanPage extends StatelessWidget {
     );
   }
 
+  // Tugas 3: Konfirmasi hapus melalui AlertDialog
+  Future<void> _konfirmasiHapus(BuildContext context) async {
+    final konfirmasi = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Konfirmasi Hapus'),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus pengiriman ${pengiriman.resi}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (konfirmasi == true && context.mounted) {
+      Navigator.pop(context, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final tgl = pengiriman.tanggalKirim;
@@ -53,6 +83,10 @@ class DetailPengirimanPage extends StatelessWidget {
             _baris('Kode Barang', pengiriman.barang.kode),
             _baris('Nama Barang', pengiriman.barang.nama),
             _baris(
+              'Berat',
+              '${pengiriman.barang.beratKg} kg',
+            ),
+            _baris(
               'Jumlah',
               '${pengiriman.jumlah} ${pengiriman.barang.satuan}',
             ),
@@ -67,6 +101,22 @@ class DetailPengirimanPage extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Kembali ke Daftar'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Tugas 3: Tombol hapus
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _konfirmasiHapus(context),
+                icon: const Icon(Icons.delete, color: Colors.red),
+                label: const Text(
+                  'Hapus Pengiriman',
+                  style: TextStyle(color: Colors.red),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                ),
               ),
             ),
           ],
