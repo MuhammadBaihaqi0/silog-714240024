@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../data/data_contoh.dart';
+import '../main.dart';
 import '../model/pengiriman.dart';
 import '../widget/kartu_pengiriman.dart';
 import 'detail_pengiriman_page.dart';
 import 'form_pengiriman_page.dart';
+import 'stok_page.dart';
 
 class DaftarPengirimanPage extends StatefulWidget {
   const DaftarPengirimanPage({super.key});
@@ -55,7 +57,28 @@ class _DaftarPengirimanPageState extends State<DaftarPengirimanPage> {
     const opsi = ['Semua', 'Menunggu Pickup', 'Dalam Perjalanan', 'Diterima'];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Pengiriman')),
+      appBar: AppBar(
+        title: const Text('Daftar Pengiriman'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.inventory),
+            tooltip: 'Stok Gudang',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StokPage()),
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            tooltip: 'Mode Gelap/Terang',
+            onPressed: () => SiLogApp.toggleDarkMode(context),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           SingleChildScrollView(
